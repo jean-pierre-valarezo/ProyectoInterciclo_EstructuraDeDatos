@@ -6,6 +6,8 @@ package ec.edu.ups.proyectointerciclo_estructuradedatos.controlador;
 
 import ec.edu.ups.proyectointerciclo_estructuradedatos.modelo.Contacto;
 import ec.edu.ups.proyectointerciclo_estructuradedatos.modelo.Nodo;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  *
@@ -54,4 +56,106 @@ public class ArbolContactos {
         }
     }
 
+    public boolean eliminarContacto(String nombre) {
+        if (raiz == null) {
+            return false;
+        }
+
+        Nodo nodoEliminado = eliminarContactoRecursivo(raiz, nombre);
+        return nodoEliminado != null;
+    }
+
+    private Nodo eliminarContactoRecursivo(Nodo nodo, String nombre) {
+    if (nodo == null) {
+        return null;
+    }
+
+    if (nombre.compareTo(nodo.getContacto().getNombre()) < 0) {
+        nodo.izquierdo = eliminarContactoRecursivo(nodo.izquierdo, nombre);
+    } else if (nombre.compareTo(nodo.getContacto().getNombre()) > 0) {
+        nodo.derecho = eliminarContactoRecursivo(nodo.derecho, nombre);
+    } else {
+        // Caso 1: Nodo sin hijos o con un solo hijo
+        if (nodo.izquierdo == null) {
+            return nodo.derecho;
+        } else if (nodo.derecho == null) {
+            return nodo.izquierdo;
+        }
+
+        // Caso 2: Nodo con dos hijos
+        Nodo sucesor = encontrarSucesor(nodo.derecho);
+        nodo.getContacto().setNombre(sucesor.getContacto().getNombre());
+        nodo.getContacto().setTelefono(sucesor.getContacto().getTelefono());
+        nodo.derecho = eliminarContactoRecursivo(nodo.derecho, sucesor.getContacto().getNombre());
+    }
+
+    return nodo;
+}
+
+
+    private Nodo encontrarSucesor(Nodo nodo) {
+        while (nodo.izquierdo != null) {
+            nodo = nodo.izquierdo;
+        }
+        return nodo;
+    }
+
+    public void mostrarPreorder() {
+        mostrarPreorderRecursivo(raiz);
+    }
+
+    private void mostrarPreorderRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            System.out.println(nodo.getContacto().getNombre());
+            mostrarPreorderRecursivo(nodo.izquierdo);
+            mostrarPreorderRecursivo(nodo.derecho);
+        }
+    }
+
+    public void mostrarInorder() {
+        mostrarInorderRecursivo(raiz);
+    }
+
+    private void mostrarInorderRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            mostrarInorderRecursivo(nodo.izquierdo);
+            System.out.println(nodo.getContacto().getNombre());
+            mostrarInorderRecursivo(nodo.derecho);
+        }
+    }
+
+    public void mostrarPostorder() {
+        mostrarPostorderRecursivo(raiz);
+    }
+
+    private void mostrarPostorderRecursivo(Nodo nodo) {
+        if (nodo != null) {
+            mostrarPostorderRecursivo(nodo.izquierdo);
+            mostrarPostorderRecursivo(nodo.derecho);
+            System.out.println(nodo.getContacto().getNombre());
+        }
+    }
+
+    public void mostrarAnchura() {
+        if (raiz == null) {
+            return;
+        }
+
+        Queue<Nodo> cola = new LinkedList<>();
+        cola.add(raiz);
+
+        while (!cola.isEmpty()) {
+            Nodo nodo = cola.poll();
+            System.out.println(nodo.getContacto().getNombre());
+
+            if (nodo.izquierdo != null) {
+                cola.add(nodo.izquierdo);
+            }
+
+            if (nodo.derecho != null) {
+                cola.add(nodo.derecho);
+            }
+        }
+    }
+    
 }
